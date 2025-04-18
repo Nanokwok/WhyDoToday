@@ -5,7 +5,7 @@ import { ACCESS_TOKEN, REFRESH_TOKEN } from '../constants';
 import { useState, useEffect } from 'react';
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Spinner } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 
 function ProtectedRoute({ children }) {
@@ -57,7 +57,7 @@ function ProtectedRoute({ children }) {
           <CardTitle className="text-center">Authorization</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col items-center justify-center p-6">
-          <Spinner className="h-8 w-8 animate-spin text-primary" />
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
           <p className="mt-4 text-center text-sm text-muted-foreground">
             Checking authorization...
           </p>
