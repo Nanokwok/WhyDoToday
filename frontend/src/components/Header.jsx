@@ -68,7 +68,7 @@ const Header = () => {
             variant="outline" 
             size="sm" 
             onClick={handleSignOut}
-            className="text-zinc-300 hover:text-zinc-100 border-zinc-700 hover:bg-zinc-800 transition-colors"
+            className="!bg-zinc-900 !text-zinc-300 hover:!text-zinc-100 !border-zinc-700 hover:!bg-zinc-800 transition-colors"
           >
             <LogOut size={16} className="mr-2" />
             Sign Out
