@@ -63,15 +63,15 @@ export default function TodoLists({ todoLists, selectedList, setSelectedList, ha
               >
                 <div className="flex justify-between items-center">
                   <span className="font-medium truncate">{list.title}</span>
-                  <Button
+                  <div
                     onClick={(e) => {
                       e.stopPropagation()
                       handleDeleteList(list)
                     }}
-                    className="!text-zinc-1 hover:!text-red-500 !bg-zinc-900 transition-colors"
+                    className="cursor-pointer !text-zinc-900 hover:!text-red-500 transition-colors p-2 rounded"
                   >
                     <X className="w-4 h-4" />
-                  </Button>
+                  </div>
                 </div>
                 {list.description && <p className="text-xs !text-zinc-500 mt-1 truncate">{list.description}</p>}
               </li>

@@ -3,14 +3,13 @@
 import { Button } from "@/components/ui/button"
 import { X, AlertCircle } from "lucide-react"
 
-export default function FilterPanel({
-  isOpen,
-  onClose,
-  filterPriority,
-  setFilterPriority,
-  clearFilters,
-  applyFilters,
-}) {
+const priorities = [
+  { level: "1", label: "Low", active: "green-500", inactive: "green-100", text: "green-800" },
+  { level: "2", label: "Medium", active: "yellow-500", inactive: "yellow-100", text: "yellow-800" },
+  { level: "3", label: "High", active: "red-500", inactive: "red-100", text: "red-800" },
+]
+
+export default function FilterPanel({ isOpen, onClose, filterPriority, setFilterPriority }) {
   if (!isOpen) return null
 
   return (
@@ -22,40 +21,25 @@ export default function FilterPanel({
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 gap-4">
+      <div className="space-y-4">
         <div>
           <h4 className="text-sm font-medium mb-2 flex items-center gap-1">
             <AlertCircle className="w-3.5 h-3.5" /> Priority
           </h4>
           <div className="flex gap-2">
-            <Button
-              onClick={() => setFilterPriority(filterPriority === "1" ? null : "1")}
-              className={`px-2 py-1 text-sm rounded-full transition-colors ${
-                filterPriority === "1"
-                  ? "!bg-green-500 !text-white"
-                  : "!bg-green-100 !text-green-800 hover:!bg-green-200"
-              }`}
-            >
-              Low
-            </Button>
-            <Button
-              onClick={() => setFilterPriority(filterPriority === "2" ? null : "2")}
-              className={`px-2 py-1 text-sm rounded-full transition-colors ${
-                filterPriority === "2"
-                  ? "!bg-yellow-500 !text-white"
-                  : "!bg-yellow-100 !text-yellow-800 hover:!bg-yellow-200"
-              }`}
-            >
-              Medium
-            </Button>
-            <Button
-              onClick={() => setFilterPriority(filterPriority === "3" ? null : "3")}
-              className={`px-2 py-1 text-sm rounded-full transition-colors ${
-                filterPriority === "3" ? "!bg-red-500 !text-white" : "!bg-red-100 !text-red-800 hover:!bg-red-200"
-              }`}
-            >
-              High
-            </Button>
+            {priorities.map(({ level, label, active, inactive, text }) => (
+              <Button
+                key={level}
+                onClick={() => setFilterPriority(filterPriority === level ? null : level)}
+                className={`px-2 py-1 text-sm rounded-full transition-colors ${
+                  filterPriority === level
+                    ? `!bg-${active} !text-white`
+                    : `!bg-${inactive} !text-${text} hover:!bg-${inactive.replace("100", "200")}`
+                }`}
+              >
+                {label}
+              </Button>
+            ))}
           </div>
         </div>
       </div>

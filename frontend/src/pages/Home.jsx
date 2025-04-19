@@ -1,118 +1,78 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import Header from "@/components/Header"
 import Footer from "@/components/Footer"
 import { Button } from "@/components/ui/button"
-import { Filter, Plus, AlertCircle, X } from "lucide-react"
+import { Plus } from "lucide-react"
 import { toast } from "sonner"
-import api from "../api" // Make sure this path is correct
+import api from "../api"
 
-// Custom Hooks
-import useTodoLists from "@/hooks/useTodoLists"
-import useTodoItems from "@/hooks/useTodoItems"
-import { useState } from "react"
-
-// Components
+// Sections
 import TodoLists from "@/sections/TodoLists"
 import TodoItems from "@/sections/TodoItems"
 import FilterPanel from "@/sections/FilterPanel"
 import AddItemForm from "@/sections/AddItemForm"
 import DeleteDialog from "@/sections/DeleteDialog"
+import HeaderTitle from "@/sections/HeaderTitle"
+import ActiveFilters from "@/sections/ActiveFilters"
+import EmptyState from "@/sections/EmptyState"
 
-function Home() {
-  // Initialize hooks
+// Hooks
+import useTodoLists from "@/hooks/useTodoLists"
+import useTodoItems from "@/hooks/useTodoItems"
+
+export default function Home() {
   const {
-    todoLists,
-    selectedList,
-    setSelectedList,
-    getTodoLists,
-    handleDeleteList,
-    deleteTodoList,
-    createTodoList,
-    deleteDialogOpen,
-    setDeleteDialogOpen,
-    listToDelete,
+    todoLists, selectedList, setSelectedList, getTodoLists,
+    handleDeleteList, deleteTodoList, createTodoList,
+    deleteDialogOpen, setDeleteDialogOpen, listToDelete,
   } = useTodoLists()
 
   const {
-    todoItems,
-    setTodoItems,
-    showAddItemForm,
-    setShowAddItemForm,
-    getTodoItems,
-    createTodoItem,
-    deleteTodoItem,
-    toggleItemCompletion,
-    formatDate,
+    todoItems, setTodoItems, showAddItemForm, setShowAddItemForm,
+    getTodoItems, createTodoItem, deleteTodoItem,
+    toggleItemCompletion, formatDate,
   } = useTodoItems()
 
   const [filterPriority, setFilterPriority] = useState(null)
   const [filterOpen, setFilterOpen] = useState(false)
 
-  // Load initial data
-  useEffect(() => {
-    getTodoLists()
-  }, [])
+  useEffect(() => { getTodoLists() }, [])
+  useEffect(() => { if (selectedList) getTodoItems(selectedList.id) }, [selectedList])
 
-  // Load todo items when selected list changes
-  useEffect(() => {
-    if (selectedList) {
-      getTodoItems(selectedList.id);
-    }
-  }, [selectedList]);
-
-  // Handle creating a new todo item
   const handleCreateTodoItem = (formData) => {
-    if (selectedList) {
-      createTodoItem(formData, selectedList.id)
-    }
+    if (selectedList) createTodoItem(formData, selectedList.id)
   }
 
-  // Apply filters handler
   const handleApplyFilters = () => {
-    if (selectedList) {
-      if (selectedList.id === "all") {
-        // For "View All Lists", we need to handle filtering differently
-        api
-          .get(`/api/todoitems/${filterPriority ? `?priority=${filterPriority}` : ""}`)
-          .then((res) => res.data)
-          .then((data) => setTodoItems(data))
-          .catch((err) => toast.error(`Error applying filters: ${err.message}`))
-      } else {
-        // For specific list, filter by list ID and priority
-        api
-          .get(`/api/todoitems/?todolist=${selectedList.id}${filterPriority ? `&priority=${filterPriority}` : ""}`)
-          .then((res) => res.data)
-          .then((data) => setTodoItems(data))
-          .catch((err) => toast.error(`Error applying filters: ${err.message}`))
-      }
-    }
+    if (!selectedList) return
+    const url = selectedList.id === "all"
+      ? `/api/todoitems/${filterPriority ? `?priority=${filterPriority}` : ""}`
+      : `/api/todoitems/?todolist=${selectedList.id}${filterPriority ? `&priority=${filterPriority}` : ""}`
+
+    api.get(url)
+      .then(res => setTodoItems(res.data))
+      .then(() => toast.success("Filters applied"))
+      .catch(err => toast.error(`Error: ${err.message}`))
+
     setFilterOpen(false)
-    toast.success("Filters applied")
   }
 
-  // Clear filters handler
   const handleClearFilters = () => {
     setFilterPriority(null)
-    if (selectedList) {
-      getTodoItems(selectedList.id)
-    }
+    if (selectedList) getTodoItems(selectedList.id)
     toast.success("Filters cleared")
   }
 
-  // Filter items
-  const filteredItems = todoItems.filter((item) => {
-    if (!filterPriority) return true
-    return item.priority === filterPriority
-  })
+  const filteredItems = todoItems.filter(item => !filterPriority || item.priority === filterPriority)
 
   return (
     <div className="flex flex-col min-h-screen">
       <Header className="w-full z-10" />
+
       <div className="flex-1 w-full p-4 bg-zinc-50 text-zinc-900">
         <div className="max-w-7xl mx-auto">
-          {/* Delete Dialog */}
           <DeleteDialog
             isOpen={deleteDialogOpen}
             onClose={() => setDeleteDialogOpen(false)}
@@ -120,29 +80,12 @@ function Home() {
             onDelete={deleteTodoList}
           />
 
-          <div className="flex justify-between items-center mb-6 mt-10">
-            <h2 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-zinc-900 to-zinc-600 text-transparent bg-clip-text">
-              Why Do (It) Today?
-            </h2>
+          <HeaderTitle
+            filterOpen={filterOpen}
+            filterPriority={filterPriority}
+            onClick={() => setFilterOpen(!filterOpen)}
+          />
 
-            {/* Filter Button */}
-            <div className="flex items-center gap-2">
-              <Button
-                onClick={() => setFilterOpen(!filterOpen)}
-                className={`flex items-center gap-1 px-3 py-2 rounded-lg transition-colors ${
-                  filterOpen || filterPriority ? "!bg-zinc-800 !text-zinc-50" : "!bg-zinc-200 !text-zinc-800"
-                }`}
-              >
-                <Filter className="w-4 h-4" />
-                <span>Filter</span>
-                {filterPriority && (
-                  <span className="ml-1 bg-zinc-700 text-zinc-50 px-1.5 py-0.5 rounded-full text-xs">1</span>
-                )}
-              </Button>
-            </div>
-          </div>
-
-          {/* Filter Panel */}
           <FilterPanel
             isOpen={filterOpen}
             onClose={() => setFilterOpen(false)}
@@ -152,9 +95,7 @@ function Home() {
             applyFilters={handleApplyFilters}
           />
 
-          {/* Main Content Grid */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            {/* Todo Lists Section */}
             <div className="md:col-span-1">
               <TodoLists
                 todoLists={todoLists}
@@ -165,7 +106,6 @@ function Home() {
               />
             </div>
 
-            {/* Todo Items Section */}
             <div className="md:col-span-3">
               <div className="bg-white rounded-lg shadow h-full">
                 {selectedList ? (
@@ -179,43 +119,18 @@ function Home() {
                       </div>
                       <Button
                         onClick={() => setShowAddItemForm(!showAddItemForm)}
-                        className="flex items-center gap-1 !bg-zinc-800 !text-zinc-50 px-3 py-2 rounded-lg hover:!bg-zinc-700 transition-colors"
+                        className="flex items-center gap-1 !bg-zinc-800 !text-zinc-50 px-3 py-2 rounded-lg hover:!bg-zinc-700"
                       >
                         <Plus className="w-4 h-4" /> Add Task
                       </Button>
                     </div>
 
-                    {/* Active Filters Display */}
-                    {filterPriority && (
-                      <div className="px-4 py-2 bg-zinc-50 border-b flex items-center flex-wrap gap-2">
-                        <span className="text-xs font-medium text-zinc-500">Active filters:</span>
-                        <span
-                          className={`px-2 py-0.5 text-xs rounded-full flex items-center gap-1 ${
-                            filterPriority === "3"
-                              ? "bg-red-100 text-red-800"
-                              : filterPriority === "2"
-                                ? "bg-yellow-100 text-yellow-800"
-                                : "bg-green-100 text-green-800"
-                          }`}
-                        >
-                          Priority: {filterPriority === "3" ? "High" : filterPriority === "2" ? "Medium" : "Low"}
-                          <Button
-                            onClick={() => setFilterPriority(null)}
-                            className="hover:!text-zinc-900 !text-zinc-500 !rounded-full"
-                          >
-                            <X className="w-2 h-2" />
-                          </Button>
-                        </span>
-                        <Button
-                          onClick={handleClearFilters}
-                          className="px-2 py-0.5 text-xs !text-zinc-600 hover:!text-zinc-900 !ml-auto"
-                        >
-                          Clear all
-                        </Button>
-                      </div>
-                    )}
+                    <ActiveFilters
+                      filterPriority={filterPriority}
+                      onClear={handleClearFilters}
+                      onRemovePriority={() => setFilterPriority(null)}
+                    />
 
-                    {/* Add Task Form */}
                     {showAddItemForm && (
                       <AddItemForm
                         onSubmit={handleCreateTodoItem}
@@ -224,7 +139,6 @@ function Home() {
                       />
                     )}
 
-                    {/* Task List */}
                     <TodoItems
                       items={filteredItems}
                       selectedList={selectedList}
@@ -236,24 +150,15 @@ function Home() {
                     />
                   </>
                 ) : (
-                  <div className="flex flex-col items-center justify-center h-full py-16 text-center">
-                    <div className="bg-zinc-100 rounded-full p-4 mb-4">
-                      <AlertCircle className="w-8 h-8 text-zinc-500" />
-                    </div>
-                    <h2 className="text-xl font-semibold mb-2">No list selected</h2>
-                    <p className="text-zinc-600 max-w-xs">
-                      Select a list from the sidebar or create a new one to get started.
-                    </p>
-                  </div>
+                  <EmptyState />
                 )}
               </div>
             </div>
           </div>
         </div>
       </div>
+
       <Footer />
     </div>
   )
 }
-
-export default Home
