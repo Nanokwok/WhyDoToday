@@ -10,7 +10,6 @@ import { toast } from "sonner"
 // Custom Hooks
 import useTodoLists from "@/hooks/useTodoLists"
 import useTodoItems from "@/hooks/useTodoItems"
-import useTags from "@/hooks/useTags"
 import { useState } from "react"
 
 // Components
@@ -47,31 +46,12 @@ function Home() {
     formatDate,
   } = useTodoItems()
 
-  const {
-    tags,
-    newTagInputs,
-    activeFilters,
-    filterPriority,
-    filterOpen,
-    setFilterOpen,
-    setNewTagInputs,
-    getTags,
-    getItemsByTag,
-    applyFilters,
-    clearFilters,
-    handleTagInputChange,
-    handleTagSubmit,
-    addTagToItem,
-    removeTagFromItem,
-    filterItems,
-  } = useTags()
-
-  const [setFilterPriority, _setFilterPriority] = useState(null)
+  const [filterPriority, setFilterPriority] = useState(null)
+  const [filterOpen, setFilterOpen] = useState(false)
 
   // Load initial data
   useEffect(() => {
     getTodoLists()
-    getTags()
   }, [])
 
   // Load todo items when selected list changes
@@ -90,18 +70,36 @@ function Home() {
 
   // Apply filters handler
   const handleApplyFilters = () => {
-    applyFilters(selectedList, setTodoItems)
+    if (selectedList) {
+      let url = `/api/todoitems/?todolist=${selectedList.id}`
+      if (filterPriority) {
+        url += `&priority=${filterPriority}`
+      }
+      
+      api
+        .get(url)
+        .then((res) => res.data)
+        .then((data) => setTodoItems(data))
+        .catch((err) => toast.error(`Error applying filters: ${err.message}`))
+    }
     setFilterOpen(false)
     toast.success("Filters applied")
   }
 
   // Clear filters handler
   const handleClearFilters = () => {
-    clearFilters(selectedList, getTodoItems)
+    setFilterPriority(null)
+    if (selectedList) {
+      getTodoItems(selectedList.id)
+    }
+    toast.success("Filters cleared")
   }
 
   // Filter items
-  const filteredItems = filterItems(todoItems)
+  const filteredItems = todoItems.filter((item) => {
+    if (!filterPriority) return true
+    return item.priority === filterPriority
+  })
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -126,16 +124,16 @@ function Home() {
               <Button
                 onClick={() => setFilterOpen(!filterOpen)}
                 className={`flex items-center gap-1 px-3 py-2 rounded-lg transition-colors ${
-                  filterOpen || activeFilters.length > 0 || filterPriority
+                  filterOpen || filterPriority
                     ? "!bg-zinc-800 !text-zinc-50"
                     : "!bg-zinc-200 !text-zinc-800"
                 }`}
               >
                 <Filter className="w-4 h-4" />
                 <span>Filter</span>
-                {(activeFilters.length > 0 || filterPriority) && (
+                {filterPriority && (
                   <span className="ml-1 bg-zinc-700 text-zinc-50 px-1.5 py-0.5 rounded-full text-xs">
-                    {activeFilters.length + (filterPriority ? 1 : 0)}
+                    1
                   </span>
                 )}
               </Button>
@@ -146,10 +144,7 @@ function Home() {
           <FilterPanel
             isOpen={filterOpen}
             onClose={() => setFilterOpen(false)}
-            tags={tags}
-            activeFilters={activeFilters}
             filterPriority={filterPriority}
-            getItemsByTag={getItemsByTag}
             setFilterPriority={setFilterPriority}
             clearFilters={handleClearFilters}
             applyFilters={handleApplyFilters}
@@ -189,39 +184,26 @@ function Home() {
                     </div>
 
                     {/* Active Filters Display */}
-                    {(activeFilters.length > 0 || filterPriority) && (
+                    {filterPriority && (
                       <div className="px-4 py-2 bg-zinc-50 border-b flex items-center flex-wrap gap-2">
                         <span className="text-xs font-medium text-zinc-500">Active filters:</span>
-                        {activeFilters.map((tag) => (
-                          <span
-                            key={tag}
-                            className="px-2 py-0.5 text-xs bg-blue-100 text-blue-800 rounded-full flex items-center gap-1"
+                        <span
+                          className={`px-2 py-0.5 text-xs rounded-full flex items-center gap-1 ${
+                            filterPriority === "3"
+                              ? "bg-red-100 text-red-800"
+                              : filterPriority === "2"
+                                ? "bg-yellow-100 text-yellow-800"
+                                : "bg-green-100 text-green-800"
+                          }`}
+                        >
+                          Priority: {filterPriority === "3" ? "High" : filterPriority === "2" ? "Medium" : "Low"}
+                          <Button
+                            onClick={() => setFilterPriority(null)}
+                            className="hover:!text-zinc-900 !text-zinc-500 !rounded-full"
                           >
-                            {tag}
-                            <Button onClick={() => getItemsByTag(tag)} className="!text-blue-700 hover:!text-blue-900">
-                              <X className="w-3 h-3" />
-                            </Button>
-                          </span>
-                        ))}
-                        {filterPriority && (
-                          <span
-                            className={`px-2 py-0.5 text-xs rounded-full flex items-center gap-1 ${
-                              filterPriority === "3"
-                                ? "bg-red-100 text-red-800"
-                                : filterPriority === "2"
-                                  ? "bg-yellow-100 text-yellow-800"
-                                  : "bg-green-100 text-green-800"
-                            }`}
-                          >
-                            Priority: {filterPriority === "3" ? "High" : filterPriority === "2" ? "Medium" : "Low"}
-                            <Button
-                              onClick={() => setFilterPriority(null)}
-                              className="hover:!text-zinc-900 !text-zinc-500 !rounded-full"
-                            >
-                              <X className="w-2 h-2" />
-                            </Button>
-                          </span>
-                        )}
+                            <X className="w-2 h-2" />
+                          </Button>
+                        </span>
                         <Button
                           onClick={handleClearFilters}
                           className="px-2 py-0.5 text-xs !text-zinc-600 hover:!text-zinc-900 !ml-auto"
@@ -243,14 +225,6 @@ function Home() {
                       formatDate={formatDate}
                       toggleItemCompletion={toggleItemCompletion}
                       deleteTodoItem={deleteTodoItem}
-                      newTagInputs={newTagInputs}
-                      setNewTagInputs={setNewTagInputs}
-                      handleTagInputChange={handleTagInputChange}
-                      handleTagSubmit={handleTagSubmit}
-                      addTagToItem={addTagToItem}
-                      removeTagFromItem={removeTagFromItem}
-                      tags={tags}
-                      activeFilters={activeFilters}
                       filterPriority={filterPriority}
                       clearFilters={handleClearFilters}
                     />

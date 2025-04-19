@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import TodoList, TodoItem, Tag, TodoItemTag
+from .models import TodoList, TodoItem
 
 class TodoItemInline(admin.TabularInline):
     model = TodoItem
@@ -8,12 +8,6 @@ class TodoItemInline(admin.TabularInline):
     extra = 1
     show_change_link = True
     autocomplete_fields = ('todolist',)
-
-class TodoItemTagInline(admin.TabularInline):
-    model = TodoItemTag
-    fields = ('tag',)
-    extra = 1
-    autocomplete_fields = ('tag',)
 
 @admin.register(TodoList)
 class TodoListAdmin(admin.ModelAdmin):
@@ -45,7 +39,6 @@ class TodoItemAdmin(admin.ModelAdmin):
     readonly_fields = ('created_at', 'updated_at', 'completed_at')
     autocomplete_fields = ('todolist',)
     ordering = ('is_completed', '-priority', 'due_date')
-    inlines = [TodoItemTagInline]
     date_hierarchy = 'due_date'
     actions = ['mark_as_completed']
 
@@ -53,21 +46,3 @@ class TodoItemAdmin(admin.ModelAdmin):
     def mark_as_completed(self, request, queryset):
         for item in queryset:
             item.complete()
-
-@admin.register(Tag)
-class TagAdmin(admin.ModelAdmin):
-    list_display = ('name', 'todo_count')
-    search_fields = ('name', 'todo_items__todo_item__title')
-    list_filter = ('name', 'todo_items__todo_item',)
-    readonly_fields = ()
-
-    def todo_count(self, obj):
-        return obj.todo_items.count()
-    todo_count.short_description = 'Number of TodoItems'
-
-@admin.register(TodoItemTag)
-class TodoItemTagAdmin(admin.ModelAdmin):
-    list_display = ('todo_item', 'tag')
-    search_fields = ('todo_item__title', 'tag__name')
-    list_filter = ('tag', 'todo_item')
-    autocomplete_fields = ('todo_item', 'tag')

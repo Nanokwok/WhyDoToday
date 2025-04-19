@@ -5,12 +5,11 @@ from rest_framework import generics, viewsets, filters, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from .models import TodoList, TodoItem, Tag, TodoItemTag
+from .models import TodoList, TodoItem
 from .serializers import (
     UserSerializer, 
     TodoListSerializer, 
     TodoItemSerializer, 
-    TagSerializer
 )
 from .permissions import IsOwnerOrReadOnly
 
@@ -88,31 +87,4 @@ class TodoItemViewSet(viewsets.ModelViewSet):
     todo_item = self.get_object()
     todo_item.reopen()
     return Response({'status': 'item reopened'})
-
-
-class TagViewSet(viewsets.ModelViewSet):
-  """
-  ViewSet for viewing and editing tags
-  """
-  queryset = Tag.objects.all()
-  serializer_class = TagSerializer
-  permission_classes = [IsAuthenticated]
-  filter_backends = [filters.SearchFilter]
-  search_fields = ['name']
-
-
-class TodoItemsByTagView(generics.ListAPIView):
-  """
-  View to list all todo items with a specific tag
-  """
-  serializer_class = TodoItemSerializer
-  permission_classes = [IsAuthenticated]
-  
-  def get_queryset(self):
-      tag_name = self.kwargs['tag_name']
-      tag = get_object_or_404(Tag, name=tag_name)
-      return TodoItem.objects.filter(
-        tags__tag=tag,
-        todolist__owner=self.request.user
-      )
   

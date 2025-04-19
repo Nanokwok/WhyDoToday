@@ -1,15 +1,12 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { X, Tag, AlertCircle } from "lucide-react"
+import { X, AlertCircle } from "lucide-react"
 
 export default function FilterPanel({
   isOpen,
   onClose,
-  tags,
-  activeFilters,
   filterPriority,
-  getItemsByTag,
   setFilterPriority,
   clearFilters,
   applyFilters,
@@ -25,29 +22,7 @@ export default function FilterPanel({
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <h4 className="text-sm font-medium mb-2 flex items-center gap-1">
-            <Tag className="w-3.5 h-3.5" /> Tags
-          </h4>
-          <div className="flex flex-wrap gap-2 mb-2">
-            {tags.map((tag) => (
-              <Button
-                key={tag.id}
-                onClick={() => getItemsByTag(tag.name)}
-                className={`px-2 py-1 text-sm rounded-full transition-colors ${
-                  activeFilters.includes(tag.name)
-                    ? "!bg-blue-500 !text-white"
-                    : "!bg-blue-100 !text-blue-800 hover:!bg-blue-200"
-                }`}
-              >
-                {tag.name}
-              </Button>
-            ))}
-            {tags.length === 0 && <p className="text-sm text-zinc-500">No tags available</p>}
-          </div>
-        </div>
-
+      <div className="grid grid-cols-1 gap-4">
         <div>
           <h4 className="text-sm font-medium mb-2 flex items-center gap-1">
             <AlertCircle className="w-3.5 h-3.5" /> Priority
