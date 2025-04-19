@@ -1,6 +1,7 @@
+
 # WhyDoToday - To-Do List App
 
-WhyDoToday is a productivity app built to help users manage tasks. 
+WhyDoToday is a productivity app built to help users manage tasks.  
 This project uses React.js (Vite) for the frontend and Django REST Framework for the backend.
 
 ## Tech Stack
@@ -19,13 +20,24 @@ This project uses React.js (Vite) for the frontend and Django REST Framework for
 ## Screenshot
 
 ### Main Page
-![image](https://github.com/user-attachments/assets/7332f3db-46c2-4722-9f20-ad6e6f1fa294)
 
-![image](https://github.com/user-attachments/assets/ab293ea8-1e72-4516-a2d9-02edd40f1931)
+![image](https://github.com/user-attachments/assets/33bba345-70e8-4865-9dea-0d13c1ac7295)
+
+![image](https://github.com/user-attachments/assets/8cf407aa-856e-4b61-a2c4-2b4a0d977db3)
+
+![image](https://github.com/user-attachments/assets/881c9a60-37dd-480d-84b2-4cedf2a9108b)
+
+![image](https://github.com/user-attachments/assets/c96516dc-7f70-4c86-afda-68ba031f6b30)
+
+![image](https://github.com/user-attachments/assets/29ad3bd2-ce42-45bb-ab7c-e348359fd535)
+
+![image](https://github.com/user-attachments/assets/3faabab7-7783-41f5-826b-86df739e546b)
 
 ### Authentication
 
-![image](https://github.com/user-attachments/assets/6449b347-bbed-4290-bc83-78539a5e60c5)
+![image](https://github.com/user-attachments/assets/74918be6-f7c4-4146-b9ff-04e602eda527)
+
+![image](https://github.com/user-attachments/assets/95ba3df2-e2f1-4aa5-8e4c-35bd0d2e5b84)
 
 ## Project Structure
 
@@ -53,47 +65,14 @@ whydo-today/
 
 ## Getting Started
 
+For detailed installation steps, please refer to the [installation guide](./installation.md).
+
 ### Prerequisites
 
 - Django
 - Python (v3.8+)
 - pip or pipenv
 - PostgreSQL
-
-## Backend Setup (Django)
-
-```bash
-cd backend
-python -m venv env
-source env/bin/activate  # or env\Scripts\activate on Windows
-pip install -r requirements.txt
-
-# Run migrations
-python manage.py makemigrations
-python manage.py migrate
-
-# Create superuser
-python manage.py createsuperuser
-
-# Run server
-python manage.py runserver
-```
-
-API available at: `http://127.0.0.1:8000/api/`
-
-## Frontend Setup (React + Vite)
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-App runs on: `http://localhost:5173/`
-
-## Connecting Frontend with Backend
-
-Update your base API URL in `backend/.env` like in sample_env.txt
 
 ## Features
 
@@ -103,21 +82,9 @@ Update your base API URL in `backend/.env` like in sample_env.txt
 - Mark tasks as completed
 - Group tasks by lists
 
-<!-- ## Testing
-
-Backend:
-```bash
-python manage.py test
-```
-
-Frontend:
-```bash
-npm run test
-``` -->
-
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
 
 ## Acknowledgements
 
