@@ -55,12 +55,14 @@ export default function TodoItems({
         <li key={item.id} className="p-4 hover:bg-zinc-50 transition-colors">
           <div className="flex items-start gap-3">
             <div className="pt-0.5">
-              <input
-                type="checkbox"
-                checked={item.is_completed}
-                onChange={() => toggleItemCompletion(item, selectedList.id === "all" ? item.todolist : selectedList.id)}
-                className="w-4 h-4 rounded !border-zinc-300 !text-zinc-900 focus:!ring-zinc-500 !bg-white"
-              />
+            <input
+              type="checkbox"
+              checked={item.is_completed}
+              onChange={() => toggleItemCompletion(item, selectedList.id === "all" ? item.todolist : selectedList.id)}
+              className="w-4 h-4 appearance-none rounded border border-zinc-300 bg-white checked:bg-zinc-900 dark:bg-white dark:checked:bg-zinc-900 relative
+                before:content-[''] before:absolute before:top-1/2 before:left-1/2 before:w-2 before:h-1 before:border-b-2 before:border-l-2
+                before:border-white before:transform before:-translate-x-1/2 before:-translate-y-1/2 before:rotate-[-45deg] checked:before:block before:hidden"
+            />
             </div>
             <div className="flex-1">
               <div className="flex justify-between items-start">

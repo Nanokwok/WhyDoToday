@@ -17,7 +17,7 @@ export default function FilterPanel({
     <div className="bg-white p-4 rounded-lg shadow mb-6 animate-in fade-in slide-in-from-top-4 duration-300">
       <div className="flex justify-between items-center mb-3">
         <h3 className="font-semibold">Filter Tasks</h3>
-        <Button onClick={onClose} className="!text-zinc-500 hover:!text-zinc-700">
+        <Button onClick={onClose} className="!bg-zinc-50 !text-zinc-500 hover:!text-zinc-700">
           <X className="w-4 h-4" />
         </Button>
       </div>
@@ -58,24 +58,6 @@ export default function FilterPanel({
             </Button>
           </div>
         </div>
-      </div>
-
-      <div className="flex justify-end gap-2 mt-4">
-        <Button
-          onClick={clearFilters}
-          className="px-3 py-1.5 text-sm !text-zinc-900 border !border-zinc-300 rounded-lg hover:!bg-zinc-100"
-        >
-          Clear All
-        </Button>
-        <Button
-          onClick={() => {
-            applyFilters()
-            onClose()
-          }}
-          className="px-3 py-1.5 text-sm !bg-zinc-900 !text-zinc-50 rounded-lg hover:!bg-zinc-800"
-        >
-          Apply Filters
-        </Button>
       </div>
     </div>
   )

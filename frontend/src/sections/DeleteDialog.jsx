@@ -21,7 +21,7 @@ export default function DeleteDialog({ isOpen, onClose, listToDelete, onDelete }
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button variant="outline" onClick={onClose}>
+          <Button variant="outline" onClick={onClose} className="!bg-zinc-50 !text-zinc-500 hover:!text-zinc-700 border !border-zinc-300">
             Cancel
           </Button>
           <Button variant="destructive" onClick={() => onDelete(listToDelete?.id)} className="!bg-zinc-900">

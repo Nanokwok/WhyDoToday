@@ -144,7 +144,7 @@ function Form({ route, method }) {
           >
             <Button 
               type="submit" 
-              className="w-full relative overflow-hidden group"
+              className="w-full relative overflow-hidden group !bg-zinc-900"
               disabled={loading}
             >
               <span className="absolute inset-0 w-full h-full"></span>

@@ -108,7 +108,7 @@ function CreateListForm({ onSubmit, onCancel }) {
         <Button
           type="button"
           onClick={onCancel}
-          className="px-2 py-1 text-sm border text-zinc-900 !border-zinc-300 rounded"
+          className="px-2 py-1 text-sm border !bg-zinc-50 !text-zinc-900 !border-zinc-300 rounded"
         >
           Cancel
         </Button>

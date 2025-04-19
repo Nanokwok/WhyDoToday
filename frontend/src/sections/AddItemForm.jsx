@@ -8,7 +8,6 @@ export default function AddItemForm({ onSubmit, onCancel, selectedList }) {
   const [todoLists, setTodoLists] = useState([])
   const isViewingAll = selectedList && selectedList.id === "all"
 
-  // Fetch lists for the dropdown if viewing all lists
   useEffect(() => {
     if (isViewingAll) {
       api
@@ -42,7 +41,7 @@ export default function AddItemForm({ onSubmit, onCancel, selectedList }) {
             <input type="text" name="title" className="w-full border rounded-lg p-2 text-sm" required />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Due Date</label>
+            <label className="block text-sm font-medium mb-1">Due Date (optional)</label>
             <input type="datetime-local" name="due_date" className="w-full border rounded-lg p-2 text-sm" />
           </div>
         </div>
@@ -61,12 +60,12 @@ export default function AddItemForm({ onSubmit, onCancel, selectedList }) {
         )}
 
         <div>
-          <label className="block text-sm font-medium mb-1">Description</label>
+          <label className="block text-sm font-medium mb-1">Description (optional)</label>
           <textarea name="description" className="w-full border rounded-lg p-2 text-sm" rows="2"></textarea>
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Priority</label>
+          <label className="block text-sm font-medium mb-1">Priority (optional)</label>
           <div className="flex gap-2">
             <label className="flex items-center gap-1 cursor-pointer">
               <input type="radio" name="priority" value="1" className="sr-only peer" />
@@ -93,7 +92,7 @@ export default function AddItemForm({ onSubmit, onCancel, selectedList }) {
           <Button
             type="button"
             onClick={onCancel}
-            className="px-3 py-1.5 text-sm border text-zinc-700 !border-zinc-300 !rounded-lg"
+            className="px-3 py-1.5 text-sm !bg-zinc-50 border !text-zinc-700 !border-zinc-300 !rounded-lg"
           >
             Cancel
           </Button>
