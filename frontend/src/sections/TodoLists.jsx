@@ -7,14 +7,14 @@ import { Plus, X } from "lucide-react"
 export default function TodoLists({ todoLists, selectedList, setSelectedList, handleDeleteList, createTodoList }) {
   const [showCreateForm, setShowCreateForm] = useState(false)
 
-  const handleCreateList = (e) => {
+  const handleCreateList = async (e) => {
     e.preventDefault()
     const formData = {
       title: e.target.title.value,
       description: e.target.description.value,
     }
-
-    const success = createTodoList(formData)
+  
+    const success = await createTodoList(formData)
     if (success) {
       e.target.reset()
       setShowCreateForm(false)
@@ -40,6 +40,19 @@ export default function TodoLists({ todoLists, selectedList, setSelectedList, ha
       <div className="overflow-y-auto max-h-[calc(100vh-300px)]">
         {todoLists.length > 0 ? (
           <ul className="divide-y">
+            <li
+              className={`px-4 py-3 cursor-pointer transition-colors ${
+                selectedList && selectedList.id === "all" ? "bg-zinc-100" : "hover:bg-zinc-50"
+              }`}
+              onClick={() =>
+                setSelectedList({ id: "all", title: "View All Lists", description: "All your tasks in one place" })
+              }
+            >
+              <div className="flex justify-between items-center">
+                <span className="font-medium truncate">View All Lists</span>
+              </div>
+              <p className="text-xs !text-zinc-500 mt-1 truncate">All your tasks in one place</p>
+            </li>
             {todoLists.map((list) => (
               <li
                 key={list.id}

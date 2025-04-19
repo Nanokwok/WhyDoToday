@@ -1,8 +1,26 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
+import { useEffect, useState } from "react"
+import api from "../api"
 
-export default function AddItemForm({ onSubmit, onCancel }) {
+export default function AddItemForm({ onSubmit, onCancel, selectedList }) {
+  const [todoLists, setTodoLists] = useState([])
+  const isViewingAll = selectedList && selectedList.id === "all"
+
+  // Fetch lists for the dropdown if viewing all lists
+  useEffect(() => {
+    if (isViewingAll) {
+      api
+        .get("/api/todolists/")
+        .then((res) => res.data)
+        .then((data) => {
+          setTodoLists(data)
+        })
+        .catch((err) => console.error("Error fetching lists:", err))
+    }
+  }, [isViewingAll])
+
   const handleSubmit = (e) => {
     e.preventDefault()
     const formData = {
@@ -10,6 +28,7 @@ export default function AddItemForm({ onSubmit, onCancel }) {
       description: e.target.description.value,
       due_date: e.target.due_date.value,
       priority: e.target.priority.value,
+      todolist: isViewingAll ? e.target.todolist.value : null,
     }
     onSubmit(formData)
   }
@@ -27,6 +46,19 @@ export default function AddItemForm({ onSubmit, onCancel }) {
             <input type="datetime-local" name="due_date" className="w-full border rounded-lg p-2 text-sm" />
           </div>
         </div>
+
+        {isViewingAll && (
+          <div>
+            <label className="block text-sm font-medium mb-1">List</label>
+            <select name="todolist" className="w-full border rounded-lg p-2 text-sm" required>
+              {todoLists.map((list) => (
+                <option key={list.id} value={list.id}>
+                  {list.title}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         <div>
           <label className="block text-sm font-medium mb-1">Description</label>

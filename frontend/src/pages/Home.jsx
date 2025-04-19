@@ -6,6 +6,7 @@ import Footer from "@/components/Footer"
 import { Button } from "@/components/ui/button"
 import { Filter, Plus, AlertCircle, X } from "lucide-react"
 import { toast } from "sonner"
+import api from "../api" // Make sure this path is correct
 
 // Custom Hooks
 import useTodoLists from "@/hooks/useTodoLists"
@@ -57,9 +58,9 @@ function Home() {
   // Load todo items when selected list changes
   useEffect(() => {
     if (selectedList) {
-      getTodoItems(selectedList.id)
+      getTodoItems(selectedList.id);
     }
-  }, [selectedList])
+  }, [selectedList]);
 
   // Handle creating a new todo item
   const handleCreateTodoItem = (formData) => {
@@ -71,16 +72,21 @@ function Home() {
   // Apply filters handler
   const handleApplyFilters = () => {
     if (selectedList) {
-      let url = `/api/todoitems/?todolist=${selectedList.id}`
-      if (filterPriority) {
-        url += `&priority=${filterPriority}`
+      if (selectedList.id === "all") {
+        // For "View All Lists", we need to handle filtering differently
+        api
+          .get(`/api/todoitems/${filterPriority ? `?priority=${filterPriority}` : ""}`)
+          .then((res) => res.data)
+          .then((data) => setTodoItems(data))
+          .catch((err) => toast.error(`Error applying filters: ${err.message}`))
+      } else {
+        // For specific list, filter by list ID and priority
+        api
+          .get(`/api/todoitems/?todolist=${selectedList.id}${filterPriority ? `&priority=${filterPriority}` : ""}`)
+          .then((res) => res.data)
+          .then((data) => setTodoItems(data))
+          .catch((err) => toast.error(`Error applying filters: ${err.message}`))
       }
-      
-      api
-        .get(url)
-        .then((res) => res.data)
-        .then((data) => setTodoItems(data))
-        .catch((err) => toast.error(`Error applying filters: ${err.message}`))
     }
     setFilterOpen(false)
     toast.success("Filters applied")
@@ -124,17 +130,13 @@ function Home() {
               <Button
                 onClick={() => setFilterOpen(!filterOpen)}
                 className={`flex items-center gap-1 px-3 py-2 rounded-lg transition-colors ${
-                  filterOpen || filterPriority
-                    ? "!bg-zinc-800 !text-zinc-50"
-                    : "!bg-zinc-200 !text-zinc-800"
+                  filterOpen || filterPriority ? "!bg-zinc-800 !text-zinc-50" : "!bg-zinc-200 !text-zinc-800"
                 }`}
               >
                 <Filter className="w-4 h-4" />
                 <span>Filter</span>
                 {filterPriority && (
-                  <span className="ml-1 bg-zinc-700 text-zinc-50 px-1.5 py-0.5 rounded-full text-xs">
-                    1
-                  </span>
+                  <span className="ml-1 bg-zinc-700 text-zinc-50 px-1.5 py-0.5 rounded-full text-xs">1</span>
                 )}
               </Button>
             </div>
@@ -215,7 +217,11 @@ function Home() {
 
                     {/* Add Task Form */}
                     {showAddItemForm && (
-                      <AddItemForm onSubmit={handleCreateTodoItem} onCancel={() => setShowAddItemForm(false)} />
+                      <AddItemForm
+                        onSubmit={handleCreateTodoItem}
+                        onCancel={() => setShowAddItemForm(false)}
+                        selectedList={selectedList}
+                      />
                     )}
 
                     {/* Task List */}

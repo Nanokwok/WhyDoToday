@@ -58,7 +58,7 @@ export default function TodoItems({
               <input
                 type="checkbox"
                 checked={item.is_completed}
-                onChange={() => toggleItemCompletion(item, selectedList.id)}
+                onChange={() => toggleItemCompletion(item, selectedList.id === "all" ? item.todolist : selectedList.id)}
                 className="w-4 h-4 rounded !border-zinc-300 !text-zinc-900 focus:!ring-zinc-500 !bg-white"
               />
             </div>
@@ -66,7 +66,7 @@ export default function TodoItems({
               <div className="flex justify-between items-start">
                 <h3 className={`font-medium ${item.is_completed ? "line-through text-zinc-500" : ""}`}>{item.title}</h3>
                 <Button
-                  onClick={() => deleteTodoItem(item.id, selectedList.id)}
+                  onClick={() => deleteTodoItem(item.id, selectedList.id === "all" ? item.todolist : selectedList.id)}
                   className="!bg-white !text-zinc-400 hover:!text-red-500 transition-colors !border-0"
                 >
                   <X className="w-4 h-4" />
@@ -80,6 +80,11 @@ export default function TodoItems({
               )}
 
               <div className="flex flex-wrap items-center gap-2 mt-2">
+                {selectedList.id === "all" && item.todolist_title && (
+                  <span className="inline-flex items-center px-2 py-1 text-xs bg-zinc-200 text-zinc-800 rounded-full">
+                    {item.todolist_title}
+                  </span>
+                )}
                 <span
                   className={`inline-flex items-center px-2 py-1 text-xs rounded-full ${
                     item.priority === "3"

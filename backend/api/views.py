@@ -61,8 +61,12 @@ class TodoItemViewSet(viewsets.ModelViewSet):
   ordering_fields = ['due_date', 'priority', 'created_at', 'is_completed']
   
   def get_queryset(self):
-    """Return todo items for the current user's lists"""
-    return TodoItem.objects.filter(todolist__owner=self.request.user)
+    """Return todo items for the current user's lists, filter by todolist if provided"""
+    queryset = TodoItem.objects.filter(todolist__owner=self.request.user)
+    todolist_id = self.request.query_params.get('todolist')
+    if todolist_id:
+        queryset = queryset.filter(todolist_id=todolist_id)
+    return queryset
   
   def perform_create(self, serializer):
     """Validate todolist ownership before creating item"""

@@ -17,14 +17,14 @@ export default function DeleteDialog({ isOpen, onClose, listToDelete, onDelete }
         <DialogHeader>
           <DialogTitle>Delete List</DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete the list "{listToDelete?.title}"? This action cannot be undone.
+            Are you sure you want to delete the list "{listToDelete?.title}"? All tasks in the list will also be deleted. This action cannot be undone.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button variant="destructive" onClick={() => onDelete(listToDelete?.id)}>
+          <Button variant="destructive" onClick={() => onDelete(listToDelete?.id)} className="!bg-zinc-900">
             Delete
           </Button>
         </DialogFooter>
