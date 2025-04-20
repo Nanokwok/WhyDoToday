@@ -6,20 +6,29 @@ import api from "../api"
 
 export default function AddItemForm({ onSubmit, onCancel, selectedList }) {
   const [todoLists, setTodoLists] = useState([])
-  const isViewingAll = selectedList?.id === "all"
+  const isViewingAll = selectedList && selectedList.id === "all"
 
   useEffect(() => {
     if (isViewingAll) {
-      api.get("/api/todolists/")
-        .then((res) => setTodoLists(res.data))
+      api
+        .get("/api/todolists/")
+        .then((res) => res.data)
+        .then((data) => {
+          setTodoLists(data)
+        })
         .catch((err) => console.error("Error fetching lists:", err))
     }
   }, [isViewingAll])
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    const formData = Object.fromEntries(new FormData(e.target))
-    if (!isViewingAll) delete formData.todolist
+    const formData = {
+      title: e.target.title.value,
+      description: e.target.description.value,
+      due_date: e.target.due_date.value,
+      priority: e.target.priority.value,
+      todolist: isViewingAll ? e.target.todolist.value : null,
+    }
     onSubmit(formData)
   }
 
@@ -27,83 +36,74 @@ export default function AddItemForm({ onSubmit, onCancel, selectedList }) {
     <div className="p-4 bg-zinc-50 border-b animate-in fade-in slide-in-from-top-4 duration-300">
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <InputField label="Task Title" name="title" required />
-          <InputField label="Due Date (optional)" name="due_date" type="datetime-local" />
+          <div>
+            <label className="block text-sm font-medium mb-1">Task Title</label>
+            <input type="text" name="title" className="w-full border rounded-lg p-2 text-sm" required />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">Due Date (optional)</label>
+            <input type="datetime-local" name="due_date" className="w-full border rounded-lg p-2 text-sm" />
+          </div>
         </div>
 
         {isViewingAll && (
-          <SelectField label="List" name="todolist" options={todoLists} />
+          <div>
+            <label className="block text-sm font-medium mb-1">List</label>
+            <select name="todolist" className="w-full border rounded-lg p-2 text-sm" required>
+              {todoLists.map((list) => (
+                <option key={list.id} value={list.id}>
+                  {list.title}
+                </option>
+              ))}
+            </select>
+          </div>
         )}
 
-        <TextAreaField label="Description (optional)" name="description" />
+        <div>
+          <label className="block text-sm font-medium mb-1">Description (optional)</label>
+          <textarea name="description" className="w-full border rounded-lg p-2 text-sm" rows="2"></textarea>
+        </div>
 
-        <PriorityField />
+        <div>
+          <label className="block text-sm font-medium mb-1">Priority (optional)</label>
+          <div className="flex gap-2">
+            <label className="flex items-center gap-1 cursor-pointer">
+              <input type="radio" name="priority" value="1" className="sr-only peer" />
+              <span className="px-3 py-1 text-sm rounded-lg bg-zinc-100 peer-checked:bg-green-500 peer-checked:text-white">
+                Low
+              </span>
+            </label>
+            <label className="flex items-center gap-1 cursor-pointer">
+              <input type="radio" name="priority" value="2" className="sr-only peer" defaultChecked />
+              <span className="px-3 py-1 text-sm rounded-lg bg-zinc-100 peer-checked:bg-yellow-500 peer-checked:text-white">
+                Medium
+              </span>
+            </label>
+            <label className="flex items-center gap-1 cursor-pointer">
+              <input type="radio" name="priority" value="3" className="sr-only peer" />
+              <span className="px-3 py-1 text-sm rounded-lg bg-zinc-100 peer-checked:bg-red-500 peer-checked:text-white">
+                High
+              </span>
+            </label>
+          </div>
+        </div>
 
         <div className="flex justify-end gap-2">
-          <Button type="button" onClick={onCancel} className="px-3 py-1.5 text-sm !bg-zinc-50 border !text-zinc-700 !border-zinc-300 !rounded-lg">
+          <Button
+            type="button"
+            onClick={onCancel}
+            className="px-3 py-1.5 text-sm !bg-zinc-50 border !text-zinc-700 !border-zinc-300 !rounded-lg"
+          >
             Cancel
           </Button>
-          <Button type="submit" className="px-3 py-1.5 text-sm !bg-zinc-900 !text-zinc-50 rounded-lg hover:!bg-zinc-800">
+          <Button
+            type="submit"
+            className="px-3 py-1.5 text-sm !bg-zinc-900 !text-zinc-50 rounded-lg hover:!bg-zinc-800"
+          >
             Add Task
           </Button>
         </div>
       </form>
-    </div>
-  )
-}
-
-function InputField({ label, name, type = "text", required = false }) {
-  return (
-    <div>
-      <label className="block text-sm font-medium mb-1">{label}</label>
-      <input type={type} name={name} required={required} className="w-full border rounded-lg p-2 text-sm" />
-    </div>
-  )
-}
-
-function SelectField({ label, name, options }) {
-  return (
-    <div>
-      <label className="block text-sm font-medium mb-1">{label}</label>
-      <select name={name} required className="w-full border rounded-lg p-2 text-sm">
-        {options.map((list) => (
-          <option key={list.id} value={list.id}>
-            {list.title}
-          </option>
-        ))}
-      </select>
-    </div>
-  )
-}
-
-function TextAreaField({ label, name }) {
-  return (
-    <div>
-      <label className="block text-sm font-medium mb-1">{label}</label>
-      <textarea name={name} rows="2" className="w-full border rounded-lg p-2 text-sm" />
-    </div>
-  )
-}
-
-function PriorityField() {
-  const priorities = [
-    { value: "1", label: "Low", color: "green" },
-    { value: "2", label: "Medium", color: "yellow", defaultChecked: true },
-    { value: "3", label: "High", color: "red" },
-  ]
-  return (
-    <div>
-      <label className="block text-sm font-medium mb-1">Priority (optional)</label>
-      <div className="flex gap-2">
-        {priorities.map(({ value, label, color, defaultChecked }) => (
-          <label key={value} className="flex items-center gap-1 cursor-pointer">
-            <input type="radio" name="priority" value={value} defaultChecked={defaultChecked} className="sr-only peer" />
-            <span className={`px-3 py-1 text-sm rounded-lg bg-zinc-100 peer-checked:bg-${color}-500 peer-checked:text-white`}>
-              {label}
-            </span>
-          </label>
-        ))}
-      </div>
     </div>
   )
 }
