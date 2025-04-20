@@ -11,8 +11,7 @@ export default function useTodoLists() {
   const [listToDelete, setListToDelete] = useState(null)
 
   const getTodoLists = () => {
-    api
-      .get("/api/todolists/")
+    api.get("/api/todolists/")
       .then((res) => res.data)
       .then((data) => {
         setTodoLists(data)
@@ -29,12 +28,11 @@ export default function useTodoLists() {
   }
 
   const deleteTodoList = (id) => {
-    api
-      .delete(`/api/todolists/${id}/`)
+    api.delete(`/api/todolists/${id}/`)
       .then((res) => {
         if (res.status === 204) {
           toast.success("Todo list deleted successfully")
-          if (selectedList && selectedList.id === id) {
+          if (selectedList?.id === id) {
             setSelectedList(null)
           }
         } else {
@@ -47,25 +45,24 @@ export default function useTodoLists() {
   }
 
   const createTodoList = (formData) => {
-    api
-      .post("/api/todolists/", {
-        title: formData.title,
-        description: formData.description,
-      })
-      .then((res) => {
-        if (res.status === 201) {
-          toast.success("Todo list created successfully")
-          getTodoLists()
-          return true
-        } else {
-          toast.error("Failed to create todo list")
-          return false
-        }
-      })
-      .catch((err) => {
-        toast.error(`Error creating list: ${err.message}`)
+    api.post("/api/todolists/", {
+      title: formData.title,
+      description: formData.description,
+    })
+    .then((res) => {
+      if (res.status === 201) {
+        toast.success("Todo list created successfully")
+        getTodoLists()
+        return true
+      } else {
+        toast.error("Failed to create todo list")
         return false
-      })
+      }
+    })
+    .catch((err) => {
+      toast.error(`Error creating list: ${err.message}`)
+      return false
+    })
   }
 
   return {
