@@ -141,6 +141,23 @@ Your frontend app should now be running at `http://localhost:5173/`.
 
 ---
 
+## Connecting Cloudinary
+
+1. In the `frontend/.env` and `backendend/.env` file, update the Cloudinary to match your crutential:
+
+    Example:
+
+    ```
+    CLOUDINARY_CLOUD_NAME="your_cloud_name"
+    CLOUDINARY_API_KEY="your_api_key"
+    CLOUDINARY_API_SECRET="your_api_secret"
+    ```
+    ```
+    VITE_CLOUDINARY_CLOUD_NAME='your_cloud_name'
+    ```
+
+---
+
 ## Troubleshooting
 
 - If you encounter issues with database migrations, check your PostgreSQL database connection settings in the `backend/.env` file.
