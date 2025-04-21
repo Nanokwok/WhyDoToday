@@ -18,11 +18,7 @@ class UserSerializer(serializers.ModelSerializer):
 class TodoItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = TodoItem
-        fields = [
-            'id', 'title', 'description', 'due_date', 
-            'priority', 'is_completed', 'created_at', 
-            'updated_at', 'completed_at', 'todolist'
-        ]
+        fields = '__all__'
         read_only_fields = ['created_at', 'updated_at', 'completed_at']
 
 

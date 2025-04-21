@@ -3,9 +3,12 @@
 import { Button } from "@/components/ui/button"
 import { useEffect, useState } from "react"
 import api from "../api"
+import { ImagePlus, Loader2 } from "lucide-react"
 
 export default function AddItemForm({ onSubmit, onCancel, selectedList }) {
   const [todoLists, setTodoLists] = useState([])
+  const [photoPreview, setPhotoPreview] = useState(null)
+  const [isLoading, setIsLoading] = useState(false)
   const isViewingAll = selectedList && selectedList.id === "all"
 
   useEffect(() => {
@@ -20,16 +23,42 @@ export default function AddItemForm({ onSubmit, onCancel, selectedList }) {
     }
   }, [isViewingAll])
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    const formData = {
-      title: e.target.title.value,
-      description: e.target.description.value,
-      due_date: e.target.due_date.value,
-      priority: e.target.priority.value,
-      todolist: isViewingAll ? e.target.todolist.value : null,
+  const handlePhotoChange = (e) => {
+    const file = e.target.files[0]
+    if (file) {
+      setPhotoPreview(URL.createObjectURL(file))
     }
-    onSubmit(formData)
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setIsLoading(true)
+
+    const formData = new FormData()
+    formData.append("title", e.target.title.value)
+    formData.append("description", e.target.description.value)
+
+    if (e.target.due_date.value) {
+      formData.append("due_date", e.target.due_date.value)
+    }
+
+    formData.append("priority", e.target.priority.value)
+
+    if (isViewingAll && e.target.todolist.value) {
+      formData.append("todolist", e.target.todolist.value)
+    }
+
+    if (e.target.photo.files[0]) {
+      formData.append("photo", e.target.photo.files[0])
+    }
+
+    try {
+      await onSubmit(formData)
+    } catch (error) {
+      console.error("Error submitting form:", error)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -65,6 +94,29 @@ export default function AddItemForm({ onSubmit, onCancel, selectedList }) {
         </div>
 
         <div>
+          <label className="block text-sm font-medium mb-1">Photo (optional)</label>
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+              <label className="flex items-center gap-2 cursor-pointer px-3 py-2 border rounded-lg hover:bg-zinc-100">
+                <ImagePlus className="w-4 h-4" />
+                <span className="text-sm">Upload Photo</span>
+                <input type="file" name="photo" accept="image/*" className="hidden" onChange={handlePhotoChange} />
+              </label>
+              {photoPreview && <span className="text-sm text-green-600">Photo selected</span>}
+            </div>
+            {photoPreview && (
+              <div className="mt-2">
+                <img
+                  src={photoPreview || "/placeholder.svg"}
+                  alt="Preview"
+                  className="h-24 w-auto object-cover rounded-lg border"
+                />
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div>
           <label className="block text-sm font-medium mb-1">Priority (optional)</label>
           <div className="flex gap-2">
             <label className="flex items-center gap-1 cursor-pointer">
@@ -92,15 +144,24 @@ export default function AddItemForm({ onSubmit, onCancel, selectedList }) {
           <Button
             type="button"
             onClick={onCancel}
+            disabled={isLoading}
             className="px-3 py-1.5 text-sm !bg-zinc-50 border !text-zinc-700 !border-zinc-300 !rounded-lg"
           >
             Cancel
           </Button>
           <Button
             type="submit"
+            disabled={isLoading}
             className="px-3 py-1.5 text-sm !bg-zinc-900 !text-zinc-50 rounded-lg hover:!bg-zinc-800"
           >
-            Add Task
+            {isLoading ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Adding...
+              </>
+            ) : (
+              'Add Task'
+            )}
           </Button>
         </div>
       </form>

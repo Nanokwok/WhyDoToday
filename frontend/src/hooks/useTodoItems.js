@@ -10,45 +10,49 @@ export default function useTodoItems() {
 
   const getTodoItems = (listId) => {
     const url = listId === "all" ? "/api/todoitems/" : `/api/todoitems/?todolist=${listId}`
-    api.get(url)
+    api
+      .get(url)
       .then((res) => res.data)
       .then((data) => setTodoItems(data))
       .catch((err) => toast.error(`Error fetching items: ${err.message}`))
   }
 
   const createTodoItem = (formData, listId) => {
-    const dueDate = formData.due_date ? new Date(formData.due_date).toISOString() : null
     const isViewingAll = listId === "all"
-    const actualListId = isViewingAll ? formData.todolist : listId
+    const actualListId = isViewingAll ? formData.get("todolist") : listId
 
-    api.post("/api/todoitems/", {
-      title: formData.title,
-      description: formData.description,
-      due_date: dueDate,
-      priority: formData.priority,
-      todolist: actualListId,
-    })
-    .then((res) => {
-      if (res.status === 201) {
-        toast.success("Todo item created successfully")
-        setShowAddItemForm(false)
-        getTodoItems(isViewingAll ? "all" : actualListId)
-        return true
-      } else {
-        toast.error("Failed to create todo item")
+    if (!isViewingAll) {
+      formData.append("todolist", actualListId)
+    }
+
+    api
+      .post("/api/todoitems/", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
+      .then((res) => {
+        if (res.status === 201) {
+          toast.success("Todo item created successfully")
+          setShowAddItemForm(false)
+          getTodoItems(isViewingAll ? "all" : actualListId)
+          return true
+        } else {
+          toast.error("Failed to create todo item")
+          return false
+        }
+      })
+      .catch((err) => {
+        toast.error(`Error creating item: ${err.message}`)
         return false
-      }
-    })
-    .catch((err) => {
-      toast.error(`Error creating item: ${err.message}`)
-      return false
-    })
+      })
   }
 
   const deleteTodoItem = (id, listId) => {
     const isViewingAll = listId === "all"
 
-    api.delete(`/api/todoitems/${id}/`)
+    api
+      .delete(`/api/todoitems/${id}/`)
       .then((res) => {
         if (res.status === 204) {
           toast.success("Todo item deleted successfully")
@@ -62,11 +66,10 @@ export default function useTodoItems() {
 
   const toggleItemCompletion = (item, listId) => {
     const isViewingAll = listId === "all"
-    const endpoint = item.is_completed 
-      ? `/api/todoitems/${item.id}/reopen/` 
-      : `/api/todoitems/${item.id}/complete/`
+    const endpoint = item.is_completed ? `/api/todoitems/${item.id}/reopen/` : `/api/todoitems/${item.id}/complete/`
 
-    api.post(endpoint)
+    api
+      .post(endpoint)
       .then(() => {
         getTodoItems(isViewingAll ? "all" : listId)
         toast.success(`Task marked as ${item.is_completed ? "reopened" : "completed"}`)

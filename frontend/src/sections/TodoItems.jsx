@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { X, Calendar, AlertCircle } from "lucide-react"
+import { X, Calendar, AlertCircle, ImageIcon } from "lucide-react"
 import DeleteTaskDialog from "./DeleteTaskDialog"
 
 export default function TodoItems({
@@ -17,6 +17,30 @@ export default function TodoItems({
 }) {
   const [openDialog, setOpenDialog] = useState(false)
   const [taskToDelete, setTaskToDelete] = useState(null)
+  const [expandedImage, setExpandedImage] = useState(null)
+ 
+  const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME
+
+  const getImageUrl = (photo) => {
+    if (!photo) return "/placeholder.svg"
+    
+    if (typeof photo === 'string' && (photo.startsWith('http://') || photo.startsWith('https://'))) {
+      return photo
+    }
+    
+    if (typeof photo === 'string') {
+      if (photo.includes('image/upload')) {
+        return `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/${photo}`
+      }
+      return `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload/${photo}`
+    }
+    
+    if (photo && photo.url) {
+      return photo.url
+    }
+    
+    return "/placeholder.svg"
+  }
 
   const handleDelete = (id, listId) => {
     deleteTodoItem(id, listId)
@@ -69,7 +93,9 @@ export default function TodoItems({
                 <input
                   type="checkbox"
                   checked={item.is_completed}
-                  onChange={() => toggleItemCompletion(item, selectedList.id === "all" ? item.todolist : selectedList.id)}
+                  onChange={() =>
+                    toggleItemCompletion(item, selectedList.id === "all" ? item.todolist : selectedList.id)
+                  }
                   className="w-4 h-4 appearance-none rounded border border-zinc-300 bg-white checked:bg-zinc-900 relative
                     before:content-[''] before:absolute before:top-1/2 before:left-1/2 before:w-2 before:h-1 before:border-b-2 before:border-l-2
                     before:border-white before:transform before:-translate-x-1/2 before:-translate-y-1/2 before:rotate-[-45deg] checked:before:block before:hidden"
@@ -77,16 +103,32 @@ export default function TodoItems({
               </div>
               <div className="flex-1">
                 <div className="flex justify-between items-start">
-                  <h3 className={`font-medium ${item.is_completed ? "line-through text-zinc-500" : ""}`}>{item.title}</h3>
-                  <Button
+                  <div className="flex items-center">
+                    <h3 className={`font-medium ${item.is_completed ? "line-through text-zinc-500" : ""}`}>
+                      {item.title}
+                    </h3>
+                    
+                    {item.photo && (
+                      <div
+                        onClick={() => {
+                          setExpandedImage(item.photo)
+                        }}
+                        className="inline-flex items-center justify-center ml-2 p-1.5 text-zinc-400 hover:text-zinc-500 cursor-pointer transition-colors rounded-full hover:bg-zinc-100"
+                      >
+                        <ImageIcon className="w-4 h-4" />
+                      </div>
+                    )}
+                  </div>
+
+                  <div
                     onClick={() => {
                       setTaskToDelete(item)
                       setOpenDialog(true)
                     }}
-                    className="!bg-white !text-zinc-400 hover:!text-red-500 transition-colors !border-0"
+                    className="inline-flex items-center justify-center p-1.5 text-zinc-400 hover:text-red-500 cursor-pointer transition-colors rounded-full hover:bg-zinc-100"
                   >
                     <X className="w-4 h-4" />
-                  </Button>
+                  </div>
                 </div>
 
                 {item.description && (
@@ -133,6 +175,30 @@ export default function TodoItems({
           taskToDelete={taskToDelete}
           onDelete={(id) => handleDelete(id, selectedList.id === "all" ? taskToDelete.todolist : selectedList.id)}
         />
+      )}
+
+      {expandedImage && (
+        <div
+          className="fixed inset-0 bg-black/50 bg-opacity-70 z-50 flex items-center justify-center p-4"
+          onClick={() => setExpandedImage(null)}
+        >
+          <div className="relative max-w-3xl max-h-[90vh] w-full">
+            <img
+              src={getImageUrl(expandedImage)}
+              alt="Expanded view"
+              className="max-h-[90vh] max-w-full object-contain mx-auto rounded-lg"
+            />
+            <button
+              className="absolute top-2 right-2 bg-black bg-opacity-50 text-white rounded-full p-1 hover:bg-opacity-70"
+              onClick={(e) => {
+                e.stopPropagation()
+                setExpandedImage(null)
+              }}
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
       )}
     </>
   )

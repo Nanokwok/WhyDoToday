@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+from cloudinary.models import CloudinaryField
 
 
 class TodoList(models.Model):
@@ -35,6 +36,11 @@ class TodoItem(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     completed_at = models.DateTimeField(null=True, blank=True)
     todolist = models.ForeignKey(TodoList, on_delete=models.CASCADE, related_name='items')
+    photo = CloudinaryField(
+        'photo', 
+        null=True, 
+        blank=True, 
+    )
     
     def __str__(self):
         return self.title
