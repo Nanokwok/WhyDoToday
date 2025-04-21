@@ -21,23 +21,23 @@ This project uses React.js (Vite) for the frontend and Django REST Framework for
 
 ### Main Page
 
-![image](https://github.com/user-attachments/assets/33bba345-70e8-4865-9dea-0d13c1ac7295)
+<img width="1440" alt="image" src="https://github.com/user-attachments/assets/dde24c07-eb7c-4c55-a8fe-0a39a831f638" />
 
-![image](https://github.com/user-attachments/assets/8cf407aa-856e-4b61-a2c4-2b4a0d977db3)
+<img width="1440" alt="image" src="https://github.com/user-attachments/assets/07dcf2a0-f4ab-4907-88e5-c3c5a9146c01" />
 
-![image](https://github.com/user-attachments/assets/881c9a60-37dd-480d-84b2-4cedf2a9108b)
+<img width="1440" alt="image" src="https://github.com/user-attachments/assets/4cfe700f-392e-4e2f-b4d6-4e1b562f5708" />
 
-![image](https://github.com/user-attachments/assets/c96516dc-7f70-4c86-afda-68ba031f6b30)
+<img width="1440" alt="image" src="https://github.com/user-attachments/assets/9980e72d-1526-4813-9001-615efb0d79e4" />
 
-![image](https://github.com/user-attachments/assets/29ad3bd2-ce42-45bb-ab7c-e348359fd535)
+<img width="1440" alt="image" src="https://github.com/user-attachments/assets/e48d3049-d74b-463f-afbb-21e99aa1fdc7" />
 
-![image](https://github.com/user-attachments/assets/3faabab7-7783-41f5-826b-86df739e546b)
+<img width="1440" alt="image" src="https://github.com/user-attachments/assets/06573ef4-e0b1-41c7-a516-7b3ae01db25e" />
 
 ### Authentication
 
-![image](https://github.com/user-attachments/assets/74918be6-f7c4-4146-b9ff-04e602eda527)
+<img width="1440" alt="image" src="https://github.com/user-attachments/assets/fc28dff3-af6e-4b5c-833d-6d7bb3585f38" />
 
-![image](https://github.com/user-attachments/assets/95ba3df2-e2f1-4aa5-8e4c-35bd0d2e5b84)
+<img width="1440" alt="image" src="https://github.com/user-attachments/assets/5e0ee8fc-c86a-4949-adb2-cb8d51279408" />
 
 ## Project Structure
 
@@ -77,7 +77,8 @@ For detailed installation steps, please refer to the [installation guide](./inst
 ## Features
 
 - User authentication (login, register)
-- Create / edit / delete tasks
+- Create / delete tasks
+- Attach photo
 - Set due dates and priorities
 - Mark tasks as completed
 - Group tasks by lists
