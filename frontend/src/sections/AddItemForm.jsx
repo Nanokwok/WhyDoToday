@@ -117,7 +117,7 @@ export default function AddItemForm({ onSubmit, onCancel, selectedList }) {
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Priority (optional)</label>
+          <label className="block text-sm font-medium mb-1">Priority</label>
           <div className="flex gap-2">
             <label className="flex items-center gap-1 cursor-pointer">
               <input type="radio" name="priority" value="1" className="sr-only peer" />

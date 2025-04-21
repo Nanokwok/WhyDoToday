@@ -23,7 +23,7 @@ This project uses React.js (Vite) for the frontend and Django REST Framework for
 
 <img width="1440" alt="image" src="https://github.com/user-attachments/assets/dde24c07-eb7c-4c55-a8fe-0a39a831f638" />
 
-<img width="1440" alt="image" src="https://github.com/user-attachments/assets/07dcf2a0-f4ab-4907-88e5-c3c5a9146c01" />
+<img width="1440" alt="image" src="https://github.com/user-attachments/assets/ad989bc5-3050-45bb-8b4b-808c8c643f48" />
 
 <img width="1440" alt="image" src="https://github.com/user-attachments/assets/4cfe700f-392e-4e2f-b4d6-4e1b562f5708" />
 
